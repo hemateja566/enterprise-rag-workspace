@@ -11,7 +11,18 @@ from __future__ import annotations
 import json
 import logging
 import os
+import sys
 from typing import Any, Dict, Optional
+
+# Add project root to path for tools import
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+# Add support-ai to path for shared schemas/config
+_SUPPORT_AI_PATH = r"C:\Users\lenovo\Documents\Default Project\support-ai\src"
+if _SUPPORT_AI_PATH not in sys.path:
+    sys.path.insert(0, _SUPPORT_AI_PATH)
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -31,9 +42,9 @@ from app.agents.planner import Planner
 from app.agents.executor import Executor, ToolRegistry
 from app.agents.verifier import Verifier
 from app.memory import ShortTermMemory, LongTermMemory
-from app.tools.search import SearchTool
-from app.tools.job_search import JobSearchTool
-from app.tools.skill_analysis import SkillAnalysisTool
+
+# Import tools from tools package (classes defined in tools/__init__.py)
+from tools import SearchTool, JobSearchTool, SkillAnalysisTool
 
 # Try to initialize tools, gracefully degrade if API keys missing
 try:
@@ -190,19 +201,10 @@ class PlanResponse(BaseModel):
 
 # ── Lifecycle: Initialize memory ──────────────────────────────────────────────
 
-short_term_memory: ShortTermMemory = ShortTermMemory(
-    host=os.getenv("REDIS_HOST", "localhost"),
-    port=int(os.getenv("REDIS_PORT", "6379")),
-    db=int(os.getenv("REDIS_DB", "0")),
-)
-
-long_term_memory: LongTermMemory = LongTermMemory(
-    db_name=os.getenv("POSTGRES_DB", "agentic_ai"),
-    user=os.getenv("POSTGRES_USER", "postgres"),
-    password=os.getenv("POSTGRES_PASSWORD", "password"),
-    host=os.getenv("POSTGRES_HOST", "localhost"),
-    port=int(os.getenv("POSTGRES_PORT", "5432")),
-)
+# Memory initialization is deferred - create instances on first use
+# to avoid requiring Redis/PostgreSQL at import time
+short_term_memory: Optional[ShortTermMemory] = None
+long_term_memory: Optional[LongTermMemory] = None
 
 
 # ── API Endpoints ────────────────────────────────────────────────────────────
@@ -353,12 +355,12 @@ def _generate_final_output(
     parts.append(f"Steps completed successfully: {len(successful)}/{len(results)}")
     
     if verification.success:
-        parts.append(f"\n## ✅ Verification")
+        parts.append(f"\n## Verification")
         parts.append(f"Summary: {verification.summary}")
         if verification.recommended_actions:
-            parts.append(f"Recommended actions: {', join(verification.recommended_actions)}")
+            parts.append(f"Recommended actions: {', '.join(verification.recommended_actions)}")
     else:
-        parts.append(f"\n## ⚠️ Verification")
+        parts.append(f"\n## Verification")
         parts.append(f"Summary: {verification.summary}")
         if verification.recommended_actions:
             parts.append(f"Recommended actions: {', '.join(verification.recommended_actions)}")
@@ -407,7 +409,7 @@ def _build_execution_log(
     return log_entries
 
 
-# Run the app with: uvicorn api.main:app --port 8000
+# Run the app with: uvicorn app.main:app --port 8000
 # (When run directly)
 if __name__ == "__main__":
     import uvicorn

@@ -13,7 +13,7 @@ import time
 import logging
 from typing import Any, Dict, List, Optional
 
-from support_ai.schemas import ToolResult
+from app.schemas import ToolResult
 
 log = logging.getLogger(__name__)
 

@@ -17,7 +17,7 @@ import redis
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from support_ai.schemas import UserRequest
+from app.schemas import UserRequest
 
 log = logging.getLogger(__name__)
 

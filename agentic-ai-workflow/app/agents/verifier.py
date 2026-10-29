@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List
 
-from support_ai.schemas import VerificationResult, AgentResponse
+from app.schemas import VerificationResult, AgentResponse
 
 log = logging.getLogger(__name__)
 

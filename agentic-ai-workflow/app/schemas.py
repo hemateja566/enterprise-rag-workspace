@@ -28,7 +28,7 @@ class PlanStep(BaseModel):
         default_factory=dict, description="Parameters for the tool"
     )
     depends_on: Optional[List[str]] = Field(
-        None, description "Step IDs this step depends on"
+        None, description="Step IDs this step depends on"
     )
     estimated_duration_s: Optional[float] = Field(
         None, description="Estimated duration in seconds"

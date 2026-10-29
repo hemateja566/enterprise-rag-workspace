@@ -12,7 +12,7 @@ import json
 import logging
 from typing import Any, Dict, List
 
-from support_ai.schemas import UserRequest, PlanStep, ExecutionPlan, AgentResponse
+from app.schemas import UserRequest, PlanStep, ExecutionPlan, AgentResponse
 
 log = logging.getLogger(__name__)
 
