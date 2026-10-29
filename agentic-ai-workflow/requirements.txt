@@ -1,0 +1,30 @@
+# Agentic AI Workflow Assistant - Requirements
+# ==============================================
+
+# Core
+pydantic>=2.5
+python-dotenv>=1.0
+
+# Web API
+fastapi>=0.110
+uvicorn>=0.29
+
+# Agent framework
+langgraph>=0.0.40
+langchain>=0.2.0
+langchain-core>=0.0.20
+
+# LLM integration
+openai>=1.0.0  # for OpenAI API compatibility
+requests>=2.31
+
+# Search & APIs
+tavily-python>=0.1.0
+
+# Database
+psycopg2-binary>=2.9.0
+redis>=5.0.0
+
+# Utilities
+structlog>=23.1.0
+tenacity>=8.0.0  # retry logic

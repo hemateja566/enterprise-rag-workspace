@@ -1,0 +1,77 @@
+BLACKCOFFER – AI TEXTUAL ANALYSIS (Test Assignment)
+Approach note + How to run
+================================================
+
+1. WHAT WAS DONE
+----------------
+Input:  Input.xlsx (82 URL_ID + URL rows, insights.blackcoffer.com)
+        StopWords/ (7 files), MasterDictionary/ (positive-words.txt, negative-words.txt)
+
+Step A – Data extraction (SECTION 1: data_extraction.py: extract_article / fetch_and_save)
+  - requests + BeautifulSoup (per assignment: Python crawling allowed).
+  - Title  = first <h1> (h1.entry-title / article h1), fallback og:title / <title>.
+  - Body   = div.td-post-content (Newspaper WordPress theme used by the site),
+             fallback article / div.entry-content / main.
+  - Only heading + paragraph + list text (h1-h4, p, li) is joined, so site
+    header, nav, footer, related/popular widgets are excluded.
+  - Saved as articles/<URL_ID>.txt as "title + newline + article text".
+  - Parallel (ThreadPoolExecutor, 15 workers), 3 retries with backoff,
+    resumable (skips .txt files already >100 bytes).
+
+Step B – Text analysis (SECTION 2: text_analysis.py: analyze_text)
+  Exactly per Text Analysis.docx:
+  - Stopwords = union of all StopWords/*.txt, lowercased. Lines of the form
+    "WORD | comment" are split on '|' and only the word is kept.
+  - Positive/Negative dictionaries = MasterDictionary words NOT in stopwords.
+  - Tokens = regex [A-Za-z]+. Cleaned tokens = lowercased tokens minus stopwords.
+  - POSITIVE SCORE = count of cleaned tokens in positive dict.
+  - NEGATIVE SCORE = count of cleaned tokens in negative dict (as positive number).
+  - POLARITY = (pos-neg)/((pos+neg)+1e-6), range -1..+1.
+  - SUBJECTIVITY = (pos+neg)/(cleaned count+1e-6), range 0..+1.
+  - Sentences = regex split on . ! ? (avoids nltk data downloads).
+  - AVG SENTENCE LENGTH = raw words / sentences.
+  - Complex word = syllables > 2. Syllables = vowel-group count (aeiouy),
+    trailing "es"/"ed" stripped before counting (per doc), min 1.
+  - PERCENTAGE COMPLEX = complex / raw words.
+  - FOG INDEX = 0.4 * (avg_sent_len + pct_complex).
+  - AVG WORDS PER SENTENCE = same as avg sentence length (separate column).
+  - COMPLEX WORD COUNT, WORD COUNT (= len(cleaned)), SYLLABLE PER WORD
+    (= total syllables / raw words), PERSONAL PRONOUNS
+    (= regex I|we|my|ours|us case-insensitive minus uppercase "US"),
+    AVG WORD LENGTH (= chars / raw words).
+
+Output: Output.csv + Output.xlsx with columns in the exact order of
+        Output Data Structure.xlsx (URL_ID, URL + 13 variables).
+
+Verification: 82/82 articles extracted (none empty), Output.csv has 82 rows,
+0 nulls. Spot-checked TrackerOPS29012026 title + first paragraph.
+
+2. HOW TO RUN
+-------------
+Requirements: Python 3.10+.
+
+  cd blackcoffer-assignment
+  pip install -r requirements.txt
+  python main.py
+    # full run: reads Input.xlsx, writes articles/*.txt + Output.csv
+
+Useful options:
+  python main.py --output Output.xlsx --workers 15
+  python main.py --limit 3 --output Output_test.csv   # smoke test
+  python main.py --input Input.xlsx --articles articles \
+      --stopwords StopWords --master MasterDictionary --workers 10
+
+Code sections:
+  data_extraction.py  = SECTION 1 (crawling only)
+  text_analysis.py    = SECTION 2 (scoring only)
+  main.py             = SECTION 3 (pipeline: run this)
+
+Dependencies (requirements.txt): pandas, openpyxl, requests, beautifulsoup4, lxml.
+
+3. DELIVERABLES FOR THE GOOGLE FORM
+-----------------------------------
+  a) .py files (section-wise): data_extraction.py, text_analysis.py, main.py
+  b) Output.csv (or Output.xlsx)
+  c) this file (approach + run instructions)
+  Upload these to Google Drive and paste the Drive URL in:
+  https://forms.gle/uuto36fbLqStvNEy9
