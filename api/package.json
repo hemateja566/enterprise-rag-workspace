@@ -1,0 +1,24 @@
+{
+  "name": "enterprise-rag-api",
+  "version": "1.0.0",
+  "description": "Flask REST API backend for Enterprise Multi-Document RAG & Semantic Analytics Workspace",
+  "main": "app.py",
+  "scripts": {
+    "start": "python app.py",
+    "test": "echo 'No test setup' && exit 0"
+  },
+  "keywords": ["flask", "rag", "sse", "mysql", "jwt"],
+  "author": "Enterprise RAG Workspace",
+  "license": "MIT",
+  "dependencies": {
+    "Flask": "^3.0.0",
+    "Flask-JWT-Extended": "^5.7.0",
+    "Flask-SQLAlchemy": "^3.1.0",
+    "Flask-CORS": "^5.0.0",
+    "python-dotenv": "^10.0.0",
+    "mysql-connector-python": "^8.3.0"
+  },
+  "devDependencies": {
+    "pytest": "^8.3.0",
+  }
+}
