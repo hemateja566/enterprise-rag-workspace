@@ -1,0 +1,28 @@
+FROM python:3.12-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY app.py models.py routes/ services/ ./
+
+# Expose Flask port
+EXPOSE 5000
+
+# Environment defaults (overridden by docker-compose)
+ENV FLASK_ENV=production
+ENV SECRET_KEY=default-secret-key
+ENV JWT_SECRET_KEY=default-jwt-secret
+
+# Run the Flask application
+CMD ["python", "app.py"]
