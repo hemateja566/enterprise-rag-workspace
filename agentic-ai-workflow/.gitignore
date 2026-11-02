@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.local
+venv/
+.venv/
+env/
+/build/
+/dist/
+
+# Docker
+.dockerinit
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# PostgreSQL
+*.sql.log
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

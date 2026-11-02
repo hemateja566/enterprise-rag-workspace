@@ -1,0 +1,1 @@
+"""Prompt templates for the Agentic AI Workflow Assistant."""
